@@ -14,22 +14,37 @@ public class Tester {
         
         sleep(2);
         
-        WebElement element = driver.findElement(By.linkText("login"));
-        element.click();
+        //WebElement element = driver.findElement(By.linkText("login"));
+        WebElement element = driver.findElement(By.linkText("register new user"));
+	element.click();
 
         sleep(2);
+	element = driver.findElement(By.name("username"));
+	element.sendKeys("pakke1");
+	element = driver.findElement(By.name("password"));
+	element.sendKeys("kuikkeli123");
+	element = driver.findElement(By.name("passwordConfirmation"));
+	element.sendKeys("kuikkeli123");
 
-        element = driver.findElement(By.name("username"));
+/*        element = driver.findElement(By.name("username"));
         element.sendKeys("pekka");
         element = driver.findElement(By.name("password"));
         element.sendKeys("akkep");
+	element.sendKeys("vaara");
         element = driver.findElement(By.name("login"));
-        
+        */
         sleep(2);
         element.submit();
 
         sleep(3);
-        
+	element = driver.findElement(By.linkText("continue to application mainpage"));
+	element.click();
+
+	sleep(2);
+	
+        element = driver.findElement(By.linkText("logout"));
+	element.click();
+	sleep(2);
         driver.quit();
     }
     
