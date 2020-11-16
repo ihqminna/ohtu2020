@@ -44,5 +44,4 @@ public class Stepdefs {
     public void systemWillRespondWith(String expectedOutput) {
         assertTrue(io.getPrints().contains(expectedOutput));
     }    
-
 }
