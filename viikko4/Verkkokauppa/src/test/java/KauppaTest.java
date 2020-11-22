@@ -1,9 +1,5 @@
 
-import ohtu.verkkokauppa.Kauppa;
-import ohtu.verkkokauppa.Tuote;
-import ohtu.verkkokauppa.Pankki;
-import ohtu.verkkokauppa.Varasto;
-import ohtu.verkkokauppa.Viitegeneraattori;
+import ohtu.verkkokauppa.*;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -13,12 +9,14 @@ public class KauppaTest {
     Pankki pankki;
     Viitegeneraattori viitegen;
     Varasto varasto;
+    Ostoskori ostoskori;
     
     @Before
     public void setUp(){
         pankki = mock(Pankki.class);
         viitegen = mock(Viitegeneraattori.class);
         varasto = mock(Varasto.class);
+        ostoskori = mock(Ostoskori.class);
     }
     
     @Test
@@ -94,7 +92,7 @@ public class KauppaTest {
         verify(pankki).tilisiirto(eq("pekka"), eq(0), eq("12345"), eq("33333-44455"),eq(10));  
     }
     
-        @Test
+    @Test
     public void kahdenEriTuotteenOstaminenToinenLoppu() {
         when(varasto.saldo(1)).thenReturn(10); 
         when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));
@@ -108,5 +106,41 @@ public class KauppaTest {
         k.tilimaksu("pekka", "12345");
         
         verify(pankki).tilisiirto(eq("pekka"), eq(0), eq("12345"), eq("33333-44455"),eq(5));  
+    }
+    
+    @Test
+    public void uusiOstosNollaaVanhan() {
+        Kauppa k = new Kauppa(varasto, pankki, viitegen);
+        when(varasto.saldo(1)).thenReturn(10); 
+        when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);         
+        
+        k.aloitaAsiointi();
+        assertEquals(ostoskori.hinta(), 0);
+    }
+    
+    @Test
+    public void uusiViiteJokaTapahtumalle(){
+        when(varasto.saldo(1)).thenReturn(10); 
+        when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));        
+        Kauppa k = new Kauppa(varasto, pankki, viitegen);
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1); 
+        k.tilimaksu("pekka", "12345");
+        
+        verify(viitegen).uusi();
+    }
+    
+    @Test
+    public void poistoKoristaOnnistuu() {
+        when(varasto.saldo(1)).thenReturn(10); 
+        when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));        
+        Kauppa k = new Kauppa(varasto, pankki, viitegen);
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1); 
+        k.poistaKorista(1);
+        
+        assertEquals(ostoskori.hinta(), 0);
     }
 }
